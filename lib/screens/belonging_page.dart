@@ -1,23 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop_app/models.dart';
+import 'package:pet_shop_app/screens/belonging_widgets/add_belonging.dart';
+import 'package:pet_shop_app/screens/belonging_widgets/grid_view.dart';
 import 'package:pet_shop_app/screens/borrowed_page.dart';
-import 'package:pet_shop_app/screens/belonging_page.dart';
 import 'package:pet_shop_app/screens/friend_page.dart';
+import 'package:pet_shop_app/screens/homepage.dart';
+import 'package:pet_shop_app/services.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+class BelongingsPage extends StatefulWidget {
+  BelongingsPage({Key? key, required this.index}) : super(key: key);
+  final int index;
 
   @override
-  _HomeState createState() => _HomeState();
+  _BelongingsState createState() => _BelongingsState();
 }
 
-class _HomeState extends State<HomePage> {
-  int _currentIndex = 0;
+class _BelongingsState extends State<BelongingsPage> {
+  late int _currentIndex;
+  List<Belonging> _foundBelongings = [];
+
+  @override
+  void initState() {
+    _fetchBelongings();
+    super.initState();
+    _currentIndex = widget.index;
+  }
+
+  Future<void> _fetchBelongings() async {
+    try {
+      List<Belonging> belongings = await ApiService().fetchBelonging();
+      setState(() {
+        _foundBelongings = belongings;
+      });
+    } catch (e) {
+      print("Failed");
+      // Handle any errors
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.deepPurple,
-      body: Container(), // Placeholder for the main content of each tab
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(15, 25, 15, 0),
+        child: Column(
+          children: [
+            Center(
+              child: Text(
+                "Friends",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            AddBelongings(
+              reloadState: _fetchBelongings,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            gridView(
+              currentIndex: _currentIndex,
+              newList: _foundBelongings, //MODIFIED
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: const Color.fromARGB(255, 136, 92, 211),

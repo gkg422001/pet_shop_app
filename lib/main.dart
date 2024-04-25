@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pet_shop_app/providers/cart_provider.dart';
 import 'package:pet_shop_app/screens/homepage.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-      create: (context) => CartProvider(), child: const MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
